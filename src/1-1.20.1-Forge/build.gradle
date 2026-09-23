@@ -146,20 +146,27 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
-// This block of code expands all declared replace properties in the specified resource targets.
-// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
-// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
-// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+// Перенастройка задачи processResources у Gradle. Задача processResources отвечает за перенос ресурсов в итоговый мод.
 tasks.named('processResources', ProcessResources).configure {
+    // Описание перенастройки:
+
+    // Создание переменной свойств для замены (replaceProperties) и закладывание в неё словаря. Словарь отмечается [ и ].
     var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
+        // Создание ключей в словаре. Ключи слева от :, значения справа от :. Значения берутся из gradle.properties.
+        minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+        forge_version: forge_version, forge_version_range: forge_version_range,
+        loader_version_range: loader_version_range,
+        mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+        mod_authors: mod_authors, mod_description: mod_description,
+        mod_40a_version: mod_40a_version
     ]
+
+    // Добавления словаря replaceProperties в свойства объекта inputs, который отвечает за всё, что влияет на работу задачи.
+    // properties — это метод, позволяющий записать что-то в свойства объекта inputs.
+    // После того, как словарь записан в свойства inputs, Gradle, руководствуясь этим, начинает проверять изменения в значениях переменных словаря, прежде чем скомпилировать мод, и, если в них есть изменения с прошлой компиляции, компиляция будет чистой; если же нет, быстрой и кешированной.
     inputs.properties replaceProperties
 
+    // Указание файлов, в которых на место ссылок нужно подставить значения переменных словаря replaceProperties
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
