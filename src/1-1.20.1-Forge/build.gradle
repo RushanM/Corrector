@@ -167,7 +167,8 @@ tasks.named('processResources', ProcessResources).configure {
     inputs.properties replaceProperties
 
     // Указание файлов, в которых на место ссылок нужно подставить значения переменных словаря replaceProperties
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'assets/mothra/lang/en_us.json', 'mothra.properties']) {
+        // Произведение замены ссылок на значения. expand — раскрытие/развёртывание. [project: project] — словарь из одного только ключа project со значением project и он добавляется к словарю replaceProperties.
         expand replaceProperties + [project: project]
     }
 }
