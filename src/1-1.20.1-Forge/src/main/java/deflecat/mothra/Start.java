@@ -19,7 +19,7 @@ public class Start {
         // Как бы я не хотел не использовать здесь try, на это жалуется ИСР… ведь работа с файлами опа$$$на.
         // В скобках try я создаю поток из текста mothra.properties.
         // От применения try, конечно, есть некоторая польза. Он автоматически закрывает поток по завершению чтения и при ошибке. Но, я, что, как будто не мог… вручную первое прописать?
-        try (InputStream stream = Start.class.getResourceAsStream("mothra.properties")) {
+        try (InputStream stream = Start.class.getResourceAsStream("/mothra.properties")) {
             // Это читалка для ранее загруженного как поток mothra.properties
             Properties props = new Properties();
 
