@@ -1,7 +1,12 @@
+// В язык Groovy, на котором написан этот build.gradle, встроена целая туча библиотек. groovy.json — одна из них.
+// В этой библиотеке есть класс JsonOutput, который позволяет переводить любой текст в формат JSON по всем его правилам. На строке ниже я импортирую его и позже буду использовать для преобразования своих документов в формате FTL в JSON.
+import groovy.json.JsonOutput
+
 plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
+    // Плагин, добавляющий в build.gradle блок minecraft, в котором настраивается среда для создания мода
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
@@ -15,42 +20,12 @@ base {
 // Mojang ships Java 17 to end users in 1.18+, so the mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
-    // The mappings can be changed at any time and must be in the following format.
-    // Channel:   Version:
-    // official   MCVersion             Official field/method names from Mojang mapping files
-    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
-    //
-    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
-    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
+    // Указание используемой карты названий. Я использую официальную. Значения берутся из gradle.properties.
     mappings channel: mapping_channel, version: mapping_version
 
-    // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the
-    // given run configuration before launching the game.
-    // In most cases, it is not necessary to enable.
-    // enableEclipsePrepareRuns = true
-    // enableIdeaPrepareRuns = true
-
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before
-    // launching the game.
-    // It is REQUIRED to be set to true for this template to function.
-    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+    // Без этого в тестовой среде в мой мод не включались бы какие-либо мои собственные файлы
     copyIdeResources = true
-
-    // When true, this property will add the folder name of all declared run configurations to generated IDE run
-    // configurations.
-    // The folder name can be set on a run configuration using the "folderName" property.
-    // By default, the folder name of a run configuration is the name of the Gradle project containing it.
-    // generateRunFolders = true
-
-    // This property enables access transformers for use in development.
-    // They will be applied to the Minecraft artifact.
-    // The access transformer file can be anywhere in the project.
-    // However, it must be at "META-INF/accesstransformer.cfg" in the final mod jar to be loaded by Forge.
-    // This default location is a best practice to automatically put the file in the right place in the final jar.
-    // See https://docs.minecraftforge.net/en/latest/advanced/accesstransformers/ for more information.
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     runs {
@@ -156,7 +131,7 @@ tasks.named('processResources', ProcessResources).configure {
     inputs.properties replaceProperties
 
     // Указание файлов, в которых на место ссылок нужно подставить значения переменных словаря replaceProperties
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'mothra.properties']) {
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', '40a.properties']) {
         // Произведение замены ссылок на значения. expand — раскрытие/развёртывание.
         expand replaceProperties
     }
